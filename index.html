@@ -331,13 +331,21 @@
 
             // Parâmetros para o EmailJS
             const templateParams = {
+               pin: String(userPin),
+               turma: String(userTurma),
+               materia: String(disciplinaHoje.nome),
+               nota: String(bestScore),
+               tentativas: String(attempts)
+          };
+            /*
+            const templateParams = {
                 pin: userPin,
                 turma: userTurma,
                 materia: disciplinaHoje.nome,
                 nota: bestScore,
                 tentativas: attempts
             };
-
+             */
             // Envio Automático com seus IDs
             emailjs.send('service_ib463uk', 'template_52j5vcg', templateParams)
                 .then(function(response) {
