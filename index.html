@@ -7,6 +7,14 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          // Sua chave pública inserida com sucesso
+          emailjs.init("cVumYmXu2V-7WF9oL");
+       })();
+    </script>
+
     <style>
         :root {
             --primary: #6C63FF;
@@ -64,7 +72,6 @@
             border: 1px solid rgba(255,255,255,0.3);
         }
 
-        /* PIN DISPLAY SUAVE */
         .pin-display {
             font-size: 2.8rem;
             text-align: center;
@@ -79,7 +86,6 @@
             font-weight: 700;
         }
 
-        /* TECLADO MODERNO */
         .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
         .numpad button {
@@ -112,9 +118,9 @@
             border: none;
             font-size: 1.1rem;
             box-shadow: 0 8px 15px rgba(108, 99, 255, 0.3);
+            cursor: pointer;
         }
 
-        /* BOTÕES DE OPÇÃO */
         .option-btn {
             text-align: left;
             margin-bottom: 12px;
@@ -127,6 +133,7 @@
             font-size: 1rem;
             font-weight: 600;
             transition: 0.3s;
+            cursor: pointer;
         }
 
         .option-btn:active {
@@ -156,7 +163,7 @@
             font-weight: 600;
         }
 
-        .disabled { opacity: 0.5; filter: grayscale(1); }
+        .disabled { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
     </style>
 </head>
 <body>
@@ -208,7 +215,7 @@
                     <p id="attempts-info" style="margin: 0; font-size: 0.9rem;">Tentativa 1 de 3</p>
                 </div>
                 <button id="btn-retry" onclick="restartQuiz()" class="btn-action">TENTAR NOVAMENTE</button>
-                <button onclick="finishEverything()" class="btn-action" style="background: var(--secondary);">FINALIZAR E ENVIAR</button>
+                <button id="btn-finish" onclick="finishEverything()" class="btn-action" style="background: var(--secondary);">FINALIZAR E ENVIAR</button>
             </div>
         </div>
 
@@ -226,6 +233,7 @@
     <script>
         let userPin = "", userTurma = "", attempts = 0, bestScore = 0, currentQuestionIndex = 0, sessionScore = 0, isBlocked = false, disciplinaHoje = null;
 
+        // BAnco de Dados de Questões - Altere aqui seus textos
         const bancoQuestoes = {
             1: { nome: "Língua Portuguesa 📚", q: [
                 { q: "Qual o antônimo de 'Dia'?", o: ["Noite", "Tarde", "Sol"], a: 0 },
@@ -269,7 +277,7 @@
             let p = parseInt(userPin);
             let limit = (userTurma === "300") ? 20 : 13;
             if (p >= 1 && p <= limit) { changeScreen('screen-quiz'); startQuizSession(); }
-            else { alert("PIN inválido!"); clearPin(); }
+            else { alert("PIN inválido para esta turma!"); clearPin(); }
         }
 
         function changeScreen(id) {
@@ -278,9 +286,9 @@
         }
 
         function startQuizSession() {
-            attempts++;
             currentQuestionIndex = 0;
             sessionScore = 0;
+            attempts++;
             showQuestion();
         }
 
@@ -317,14 +325,37 @@
         function restartQuiz() { changeScreen('screen-quiz'); startQuizSession(); }
 
         function finishEverything() {
-            changeScreen('screen-thanks');
-            document.getElementById('final-report').innerHTML = `
-                📌 Aluno PIN: ${userPin}<br>
-                🏫 Turma: ${userTurma}<br>
-                ⭐ Melhor Nota: ${bestScore}<br>
-                🔄 Tentativas: ${attempts}
-            `;
-            // --- ATIVAR EMAILJS AQUI SE DESEJAR ---
+            const btn = document.getElementById('btn-finish');
+            btn.innerText = "ENVIANDO...";
+            btn.classList.add('disabled');
+
+            // Parâmetros para o EmailJS
+            const templateParams = {
+                pin: userPin,
+                turma: userTurma,
+                materia: disciplinaHoje.nome,
+                nota: bestScore,
+                tentativas: attempts
+            };
+
+            // Envio Automático com seus IDs
+            emailjs.send('service_ib463uk', 'template_52j5vcg', templateParams)
+                .then(function(response) {
+                   console.log('SUCESSO!', response.status, response.text);
+                   changeScreen('screen-thanks');
+                   document.getElementById('final-report').innerHTML = `
+                        ✅ DADOS ENVIADOS!<br><br>
+                        📌 Aluno PIN: ${userPin}<br>
+                        🏫 Turma: ${userTurma}<br>
+                        ⭐ Melhor Nota: ${bestScore}<br>
+                        🔄 Tentativas: ${attempts}
+                   `;
+                }, function(error) {
+                   console.log('FALHA...', error);
+                   alert("Erro ao enviar. Verifique a conexão!");
+                   btn.innerText = "REENTENTAR ENVIO";
+                   btn.classList.remove('disabled');
+                });
         }
 
         function backToStart() {
