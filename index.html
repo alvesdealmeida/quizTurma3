@@ -1,0 +1,339 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Missão Conhecimento - Sebastião Alves de Almeida</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #4CAF50;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #2D3436;
+            --accent: #FF7675;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 450px;
+            margin: auto;
+            perspective: 1000px;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 1.6rem; color: var(--primary); text-align: center; margin: 10px 0; font-weight: 700; }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* PIN DISPLAY SUAVE */
+        .pin-display {
+            font-size: 2.8rem;
+            text-align: center;
+            background: #f1f3f5;
+            padding: 15px;
+            border-radius: 18px;
+            border: 2px solid #e9ecef;
+            min-height: 70px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            letter-spacing: 5px;
+            font-weight: 700;
+        }
+
+        /* TECLADO MODERNO */
+        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+        .numpad button {
+            padding: 18px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 16px;
+            background: #ffffff;
+            color: var(--text-main);
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .numpad button:active {
+            background: var(--primary);
+            color: white;
+            transform: scale(0.9);
+        }
+
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            margin-top: 15px;
+            padding: 18px;
+            width: 100%;
+            border-radius: 16px;
+            border: none;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 15px rgba(108, 99, 255, 0.3);
+        }
+
+        /* BOTÕES DE OPÇÃO */
+        .option-btn {
+            text-align: left;
+            margin-bottom: 12px;
+            background: white;
+            border: 2px solid #f1f3f5;
+            padding: 16px;
+            color: var(--text-main);
+            border-radius: 16px;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .option-btn:active {
+            border-color: var(--primary);
+            background: #f0f0ff;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        footer {
+            padding: 20px;
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
+        .disabled { opacity: 0.5; filter: grayscale(1); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="screen-login" class="screen active">
+            <h1 id="dia-titulo">Olá! 👋</h1>
+            <div id="login-container" class="card">
+                <p style="text-align: center; font-weight: 600; margin-top: 0;">Escolha sua Turma:</p>
+                <select id="turma-select" style="width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #f1f3f5; font-family: 'Poppins'; font-weight: 600;">
+                    <option value="300">Turma 300</option>
+                    <option value="303">Turma 303</option>
+                </select>
+                
+                <div id="pin-view" class="pin-display">--</div>
+
+                <div class="numpad">
+                    <button type="button" onclick="pressNum('1')">1</button>
+                    <button type="button" onclick="pressNum('2')">2</button>
+                    <button type="button" onclick="pressNum('3')">3</button>
+                    <button type="button" onclick="pressNum('4')">4</button>
+                    <button type="button" onclick="pressNum('5')">5</button>
+                    <button type="button" onclick="pressNum('6')">6</button>
+                    <button type="button" onclick="pressNum('7')">7</button>
+                    <button type="button" onclick="pressNum('8')">8</button>
+                    <button type="button" onclick="pressNum('9')">9</button>
+                    <button type="button" onclick="clearPin()" style="color: var(--accent)">C</button>
+                    <button type="button" onclick="pressNum('0')">0</button>
+                    <button type="button" id="btn-entrar" onclick="login()" class="btn-action">COMEÇAR MISSÃO</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-quiz" class="screen">
+            <h1 id="quiz-materia-nome">Disciplina</h1>
+            <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+            <div class="card">
+                <p id="question-text" style="font-size: 1.2rem; font-weight: 600;"></p>
+                <div id="options-box"></div>
+            </div>
+        </div>
+
+        <div id="screen-result" class="screen">
+            <h1>Sua Pontuação</h1>
+            <div class="card" style="text-align: center;">
+                <div id="final-score" style="font-size: 4.5rem; font-weight: 700; color: var(--primary);">0</div>
+                <p id="best-score-info" style="font-weight: 600;">Melhor Nota: 0</p>
+                <div style="background: #f8f9fa; padding: 10px; border-radius: 12px; margin: 15px 0;">
+                    <p id="attempts-info" style="margin: 0; font-size: 0.9rem;">Tentativa 1 de 3</p>
+                </div>
+                <button id="btn-retry" onclick="restartQuiz()" class="btn-action">TENTAR NOVAMENTE</button>
+                <button onclick="finishEverything()" class="btn-action" style="background: var(--secondary);">FINALIZAR E ENVIAR</button>
+            </div>
+        </div>
+
+        <div id="screen-thanks" class="screen">
+            <h1>Missão Cumprida! 🚀</h1>
+            <div class="card" style="text-align: center;">
+                <div id="final-report" style="text-align: left; background: #f1f3f5; padding: 20px; border-radius: 18px; font-weight: 600; line-height: 1.6;"></div>
+                <button onclick="backToStart()" class="btn-action">SAIR DO JOGO</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>Desenvolvido por Sebastião Alves de Almeida</footer>
+
+    <script>
+        let userPin = "", userTurma = "", attempts = 0, bestScore = 0, currentQuestionIndex = 0, sessionScore = 0, isBlocked = false, disciplinaHoje = null;
+
+        const bancoQuestoes = {
+            1: { nome: "Língua Portuguesa 📚", q: [
+                { q: "Qual o antônimo de 'Dia'?", o: ["Noite", "Tarde", "Sol"], a: 0 },
+                { q: "O plural de 'Mão' é:", o: ["Mãos", "Mões", "Mães"], a: 0 },
+                { q: "Qual palavra é um substantivo?", o: ["Pular", "Brasil", "Feliz"], a: 1 }
+            ]},
+            2: { nome: "Ciências 🔬", q: [
+                { q: "O que as plantas precisam para crescer?", o: ["Só água", "Luz e água", "Só terra"], a: 1 },
+                { q: "Qual destes é um mamífero?", o: ["Baleia", "Tubarão", "Peixe"], a: 0 }
+            ]},
+            3: { nome: "Matemática 🔢", q: [
+                { q: "Quanto é 5 x 5?", o: ["10", "20", "25"], a: 2 },
+                { q: "O que vem antes do 100?", o: ["90", "99", "101"], a: 1 }
+            ]},
+            5: { nome: "Geografia e História 🌍", q: [
+                { q: "Em qual continente fica o Brasil?", o: ["África", "América", "Europa"], a: 1 }
+            ]}
+        };
+
+        window.onload = () => {
+            const diaSemana = new Date().getDay();
+            if (bancoQuestoes[diaSemana]) {
+                disciplinaHoje = bancoQuestoes[diaSemana];
+                document.getElementById('dia-titulo').innerText = "Missão de Hoje!";
+                document.getElementById('quiz-materia-nome').innerText = disciplinaHoje.nome;
+            } else {
+                document.getElementById('login-container').innerHTML = "<h2 style='text-align:center'>Sistema em Descanso 😴</h2><p style='text-align:center'>As missões acontecem de Seg, Ter, Qua e Sex.</p>";
+            }
+        };
+
+        function pressNum(n) {
+            if (isBlocked || userPin.length >= 2) return;
+            userPin += n;
+            document.getElementById('pin-view').innerText = userPin;
+        }
+
+        function clearPin() { userPin = ""; document.getElementById('pin-view').innerText = "--"; }
+
+        function login() {
+            userTurma = document.getElementById('turma-select').value;
+            let p = parseInt(userPin);
+            let limit = (userTurma === "300") ? 20 : 13;
+            if (p >= 1 && p <= limit) { changeScreen('screen-quiz'); startQuizSession(); }
+            else { alert("PIN inválido!"); clearPin(); }
+        }
+
+        function changeScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function startQuizSession() {
+            attempts++;
+            currentQuestionIndex = 0;
+            sessionScore = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            let q = disciplinaHoje.q[currentQuestionIndex];
+            let percent = ((currentQuestionIndex) / disciplinaHoje.q.length) * 100;
+            document.getElementById('progress-fill').style.width = percent + "%";
+            document.getElementById('question-text').innerText = q.q;
+            let box = document.getElementById('options-box');
+            box.innerHTML = "";
+            q.o.forEach((opt, i) => {
+                let b = document.createElement('button');
+                b.className = "option-btn";
+                b.innerText = opt;
+                b.onclick = () => {
+                    if (i === q.a) sessionScore++;
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex < disciplinaHoje.q.length) showQuestion();
+                    else showResult();
+                };
+                box.appendChild(b);
+            });
+        }
+
+        function showResult() {
+            if (sessionScore > bestScore) bestScore = sessionScore;
+            changeScreen('screen-result');
+            document.getElementById('final-score').innerText = sessionScore;
+            document.getElementById('best-score-info').innerText = `Sua melhor nota: ${bestScore}`;
+            document.getElementById('attempts-info').innerText = `Tentativa ${attempts} de 3`;
+            document.getElementById('btn-retry').style.display = (attempts < 3 && bestScore < disciplinaHoje.q.length) ? 'block' : 'none';
+        }
+
+        function restartQuiz() { changeScreen('screen-quiz'); startQuizSession(); }
+
+        function finishEverything() {
+            changeScreen('screen-thanks');
+            document.getElementById('final-report').innerHTML = `
+                📌 Aluno PIN: ${userPin}<br>
+                🏫 Turma: ${userTurma}<br>
+                ⭐ Melhor Nota: ${bestScore}<br>
+                🔄 Tentativas: ${attempts}
+            `;
+            // --- ATIVAR EMAILJS AQUI SE DESEJAR ---
+        }
+
+        function backToStart() {
+            isBlocked = true;
+            document.getElementById('login-container').classList.add('disabled');
+            document.getElementById('btn-entrar').innerText = "MISSÃO COMPLETA";
+            clearPin();
+            changeScreen('screen-login');
+        }
+    </script>
+</body>
+</html>
